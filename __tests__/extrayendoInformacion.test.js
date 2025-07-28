@@ -4,8 +4,11 @@ const puppeteer = require('puppeteer');
 jest.setTimeout(90000); // 20 segundos
 
 describe('extrayendo informacion', () => {
-    it('extraer titulo de la pagina y url', async () => {
-        const browser = await puppeteer.launch({
+
+    let browser
+    let page
+    beforeEach(async()=>{
+        browser = await puppeteer.launch({
             headless: true,
             // reproduccion de modo grafico de forma lenta
             //slowMo: 2000,
@@ -17,8 +20,19 @@ describe('extrayendo informacion', () => {
             // para que tenga el tamano de mi ventana del monitor por defecto
             defaultViewport: null
         });
-        const page = await browser.newPage()
 
+        page = await browser.newPage()
+
+    })
+
+    afterEach(async()=>{
+        // cerrar navegador de prueba
+        await browser.close();
+
+    })
+
+    it('extraer titulo de la pagina y url', async () => {
+        
        page.on('dialog', async (dialog) => {
             console.log('Dialog detectado:', dialog.message());
             await dialog.accept();
@@ -36,8 +50,6 @@ describe('extrayendo informacion', () => {
         console.log('titulo:',titulo)
         console.log('url:', url)
 
-        // cerrar navegador de prueba
-        await browser.close();
     });
 
     it('extraer la informacion de un elemento', async () => {
@@ -78,19 +90,6 @@ describe('extrayendo informacion', () => {
     });
 
     it('contar elementos de pagina', async () => {
-        const browser = await puppeteer.launch({
-            headless: true,
-            // reproduccion de modo grafico de forma lenta
-            //slowMo: 2000,
-            // herramientas de desarrollo
-            devtools: false,
-            // resolucion que quiero
-            // defaultViewport:{ width: 2100, height: 1080 }
-
-            // para que tenga el tamano de mi ventana del monitor por defecto
-            defaultViewport: null
-        });
-        const page = await browser.newPage()
 
        page.on('dialog', async (dialog) => {
             console.log('Dialog detectado:', dialog.message());
@@ -107,7 +106,7 @@ describe('extrayendo informacion', () => {
         //Contar imagenes
         //$$ va a correr un query selector all, regresando un arreglo
         const images = await page.$$eval('img', (imagenes)=>imagenes.length)
-        // cerrar navegador de prueba
-        await browser.close();
+        console.log('images', images)
+
     });
 });
